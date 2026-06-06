@@ -22,8 +22,34 @@ const MESSAGES = [
   { text: "Quis nostrud exercitation ullamco laboris nisi ut aliquip.", from: "her" },
 ];
 
-// Image paths, e.g. "assets/images/1.jpg". Empty for now — add later.
-const IMAGES = [];
+// Each image: { src, title?, date?, description? }  -> rendered as a polaroid.
+// title / date / description are all optional; missing ones are simply omitted.
+// Replace the picsum placeholders with "assets/images/your-photo.jpg" later.
+const IMAGES = [
+  {
+    src: "https://picsum.photos/seed/lovekahen1/600/600",
+    title: "Lorem Title",
+    date: "Jan 2024",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing.",
+  },
+  {
+    src: "https://picsum.photos/seed/lovekahen2/600/600",
+    title: "Dolor Sit",
+    date: "Mar 2024",
+  },
+  {
+    src: "https://picsum.photos/seed/lovekahen3/600/600",
+    description: "Sed do eiusmod tempor incididunt ut labore.",
+  },
+  {
+    src: "https://picsum.photos/seed/lovekahen4/600/600",
+    date: "Jul 2024",
+  },
+  {
+    // bare photo, no caption at all
+    src: "https://picsum.photos/seed/lovekahen5/600/600",
+  },
+];
 
 // --- Setup -------------------------------------------------------------------
 
@@ -54,13 +80,47 @@ function buildMessage() {
 }
 
 function buildImage() {
+  const data = randomItem(IMAGES);
+
   const el = document.createElement("div");
   el.className = "popup";
+
+  const polaroid = document.createElement("figure");
+  polaroid.className = "polaroid";
+
   const img = document.createElement("img");
-  img.className = "photo";
-  img.src = randomItem(IMAGES);
-  img.alt = "";
-  el.appendChild(img);
+  img.className = "polaroid-img";
+  img.src = data.src;
+  img.alt = data.title || "";
+  polaroid.appendChild(img);
+
+  // Caption is only added when there's something to show.
+  if (data.title || data.date || data.description) {
+    const cap = document.createElement("figcaption");
+    cap.className = "polaroid-caption";
+
+    if (data.title) {
+      const t = document.createElement("div");
+      t.className = "polaroid-title";
+      t.textContent = data.title;
+      cap.appendChild(t);
+    }
+    if (data.description) {
+      const d = document.createElement("div");
+      d.className = "polaroid-desc";
+      d.textContent = data.description;
+      cap.appendChild(d);
+    }
+    if (data.date) {
+      const dt = document.createElement("div");
+      dt.className = "polaroid-date";
+      dt.textContent = data.date;
+      cap.appendChild(dt);
+    }
+    polaroid.appendChild(cap);
+  }
+
+  el.appendChild(polaroid);
   return el;
 }
 

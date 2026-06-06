@@ -54,7 +54,7 @@ body {
 }
 
 .popup.current .bubble,
-.popup.current .photo {
+.popup.current .polaroid {
   box-shadow:
     0 10px 28px rgba(0, 0, 0, 0.22),
     0 0 0 3px rgba(255, 255, 255, 0.7),
@@ -110,15 +110,50 @@ body {
   border-bottom-left-radius: 6px;
 }
 
-/* ---- Image pop-ups ---- */
-.photo {
+/* ---- Image pop-ups: polaroid ---- */
+.polaroid {
+  background: #fffef9;
+  /* classic polaroid: thin top/sides, thick bottom for the caption */
+  padding: 14px 14px 16px;
+  border-radius: 3px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.2);
+  width: min(68vw, 280px);
+}
+
+.polaroid-img {
   display: block;
-  max-width: min(70vw, 340px);
-  max-height: 60vh;
-  border-radius: 12px;
-  background: #fff;
-  padding: 8px;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: #e9e4dc;
+}
+
+.polaroid-caption {
+  padding: 12px 4px 4px;
+  text-align: center;
+  /* handwritten feel for the captions */
+  font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+  color: #3a3530;
+}
+
+.polaroid-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.polaroid-desc {
+  margin-top: 4px;
+  font-size: 0.92rem;
+  line-height: 1.3;
+  color: #5b544d;
+}
+
+.polaroid-date {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #9a8f86;
+  letter-spacing: 0.04em;
 }
 
 /* ---- Hint shown before first tap ---- */
