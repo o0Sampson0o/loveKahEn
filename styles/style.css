@@ -63,9 +63,14 @@ body {
 
 /* Thrown pop-ups settle back: smaller, calmer, slightly faded into the table */
 .popup.thrown {
-  --scale: 0.92;
+  --scale: 0.85;
   opacity: 0.8;
   z-index: 1;
+}
+
+/* Images are large, so they shrink a lot more once thrown onto the table */
+.popup.is-image.thrown {
+  --scale: 0.45;
 }
 
 /* gentle "breathing" glow on the live pop-up to draw the eye */

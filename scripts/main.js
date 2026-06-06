@@ -83,7 +83,7 @@ function buildImage() {
   const data = randomItem(IMAGES);
 
   const el = document.createElement("div");
-  el.className = "popup";
+  el.className = "popup is-image";
 
   const polaroid = document.createElement("figure");
   polaroid.className = "polaroid";
