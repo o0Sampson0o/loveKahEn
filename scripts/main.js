@@ -14,12 +14,42 @@
 
 // Each message: { text, from: "me" | "her" }  -> styled as sent / received.
 const MESSAGES = [
-  { text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", from: "me" },
-  { text: "Sed do eiusmod tempor incididunt ut labore et dolore magna.", from: "her" },
-  { text: "Ut enim ad minim veniam, quis nostrud exercitation.", from: "me" },
-  { text: "Duis aute irure dolor in reprehenderit in voluptate velit.", from: "her" },
-  { text: "Excepteur sint occaecat cupidatat non proident.", from: "me" },
-  { text: "Quis nostrud exercitation ullamco laboris nisi ut aliquip.", from: "her" },
+  {
+    text: "晚安",
+    from: "her",
+  },
+  {
+    text: "晚安",
+    from: "me",
+  },
+  {
+    text: "笨笨蛋😡",
+    from: "her",
+  },
+  {
+    text: "你才傻傻猪",
+    from: "me",
+  },
+  {
+    text: "早安",
+    from: "me",
+  },
+  {
+    text: "傻猪",
+    from: "her",
+  },
+  {
+    text: "晚安 傻猪",
+    from: "me",
+  },
+  {
+    text: "那22可以跟你約會嗎學長",
+    from: "her",
+  },
+  {
+    text: "我不管了！！！！！\n你的男媽媽上線了！！！！\n我還是無法冷靜！\n記得 檢查護照 錢包 水壺 衣服 行李 隨身包 補給 如果能就 online check in！！！\n\n然後 祝你一路順風👍👍\n\n然後有事記得說！至少我知道一下！知道嗎？好知道了。乖😋",
+    from: "me",
+  },
 ];
 
 // Each image: { src, title?, date?, description? }  -> rendered as a polaroid.
@@ -27,43 +57,148 @@ const MESSAGES = [
 // Replace the picsum placeholders with "assets/images/your-photo.jpg" later.
 const IMAGES = [
   {
-    src: "https://picsum.photos/seed/lovekahen1/600/600",
-    title: "Lorem Title",
-    date: "Jan 2024",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing.",
+    src: "assets/images/theatre.jpg",
+    title: "第一次一起看电影（avatar3）",
+    date: "06/02/2026",
   },
   {
-    src: "https://picsum.photos/seed/lovekahen2/600/600",
-    title: "Dolor Sit",
-    date: "Mar 2024",
+    src: "assets/images/shopping.jpg",
+    title: "一起牵手逛街",
+    date: "30/01/2026",
   },
   {
-    src: "https://picsum.photos/seed/lovekahen3/600/600",
-    description: "Sed do eiusmod tempor incididunt ut labore.",
+    src: "assets/images/meusum.jpg",
+    title: "一起逛博物馆",
+    date: "22/02/2026",
   },
   {
-    src: "https://picsum.photos/seed/lovekahen4/600/600",
-    date: "Jul 2024",
+    src: "assets/images/birthday.jpg",
+    title: "为对方庆生日",
+    date: "28/02/2026",
   },
   {
-    // bare photo, no caption at all
-    src: "https://picsum.photos/seed/lovekahen5/600/600",
+    src: "assets/images/ugly.jpg",
+    title: "一起拍丑照",
+    date: "17/01/2026",
+  },
+  {
+    src: "assets/images/movie.jpg",
+    title: "一起追剧",
+    date: "09/02/2026",
+  },
+  {
+    src: "assets/images/2playergame.jpg",
+    title: "一起玩双人游戏",
+    date: "25/12/2025",
+  },
+  {
+    src: "assets/images/icecream.jpg",
+    title: "一起吃雪糕",
+    date: "12/12/2026",
+  },
+  {
+    src: "assets/images/couple.jpg",
+    title: "一起拍情侣照",
+    date: "19/01/2026",
+  },
+  {
+    src: "assets/images/valentine.jpg",
+    title: "一起过情人节",
+    date: "30/01/2026",
+  },
+  {
+    src: "assets/images/boardgame.jpg",
+    title: "一起玩桌游",
+    date: "25/12/2025",
+  },
+  {
+    src: "assets/images/showoff.jpg",
+    title: "发朋友圈秀恩爱",
+    date: "30/01/2026",
+  },
+  {
+    src: "assets/images/mlsfirstdate.jpg",
+    title: "mls first date",
+    date: "30/01/2026",
+  },
+  {
+    src: "assets/images/Xmasfirst.jpg",
+    title: "Xmas first",
+    date: "25/12/2025",
+  },
+  {
+    src: "assets/images/confessagain.jpg",
+    title: "再次表白喔",
+    date: "17/01/2026",
+  },
+  {
+    src: "assets/images/freezing.jpg",
+    title: "冷死了",
+    date: "09/01/2026",
+  },
+  {
+    src: "assets/images/hug.jpg",
+    title: "抱来抱去",
+    date: "16/01/2026",
+  },
+  {
+    src: "assets/images/cry.jpg",
+    title: "哭哭猪",
+    date: "28/12/2025",
+  },
+  {
+    src: "assets/images/cat.jpg",
+    title: "猫猫 再见微积分",
+    date: "02/01/2026",
+  },
+  {
+    src: "assets/images/wow.jpg",
+    title: "wow手信",
+    date: "12/01/2026",
+  },
+  {
+    src: "assets/images/second.jpg",
+    title: "一下飞机第二天就约会",
+    date: "24/01/2026",
+  },
+  {
+    src: "assets/images/classtogather.jpg",
+    title: "一起上课哦",
+    date: "18/12/2025",
+  },
+  {
+    src: "assets/images/markettogather.jpg",
+    title: "第一次一起逛夜市",
+    date: "13/12/2025",
+  },
+  {
+    src: "assets/images/shy.jpg",
+    title: "娇羞哦",
+    date: "12/02/2026",
+  },
+  {
+    src: "assets/images/birthday2.jpg",
+    title: "生日",
+    date: "28/02/2026",
   },
 ];
 
 // --- Setup -------------------------------------------------------------------
 
-const table = document.getElementById("table");   // scroll container
+const table = document.getElementById("table"); // scroll container
 const surface = document.getElementById("surface"); // the canvas pop-ups live on
-const hint = document.getElementById("hint");
+const intro = document.getElementById("intro"); // opening splash
 const tossHint = document.getElementById("toss-hint");
 
-let current = null;   // the live pop-up floating in the centre, waiting to be thrown
-let surfaceW = 0;     // size of the scrollable canvas (set in init)
+// The day you got together (year, month-1, day). Months are 0-indexed: 11 = Dec.
+const START_DATE = new Date(2025, 11, 6); // 6 Dec 2025
+
+let current = null; // the live pop-up floating in the centre, waiting to be thrown
+let surfaceW = 0; // size of the scrollable canvas (set in init)
 let surfaceH = 0;
 
-const DENSITY = 5;    // max pop-ups per screen-sized area before it's "crowded"
-const MARGIN = 90;    // keep thrown items this far from an area's edges (px)
+const DENSITY = 5; // max pop-ups per screen-sized area before it's "crowded"
+const MARGIN = 90; // keep thrown items this far from an area's edges (px)
 
 function rand(min, max) {
   return Math.random() * (max - min) + min;
@@ -271,23 +406,55 @@ function revealNew() {
   const el = buildPopup();
   el.classList.add("entering", "current"); // floats fixed in the screen centre
   surface.appendChild(el);
-  el.addEventListener(
-    "animationend",
-    () => el.classList.remove("entering"),
-    { once: true }
-  );
+  el.addEventListener("animationend", () => el.classList.remove("entering"), {
+    once: true,
+  });
   current = el;
 }
 
 function handleTap() {
-  if (hint && !hint.classList.contains("hidden")) {
-    hint.classList.add("hidden");
-  }
   if (current) throwCurrent();
   revealNew();
 }
 
 table.addEventListener("click", handleTap);
 
+// --- Opening splash: show the day count, tap to begin ------------------------
+
+// Whole days from START_DATE to today. Both dates are normalised to midnight so
+// the count is exact regardless of the time of day she opens it.
+function daysTogether() {
+  const start = new Date(
+    START_DATE.getFullYear(),
+    START_DATE.getMonth(),
+    START_DATE.getDate()
+  );
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.max(0, Math.round((today - start) / 86400000));
+}
+
+function formatStartDate() {
+  const d = START_DATE;
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  return `since ${dd}-${mm}-${d.getFullYear()}`;
+}
+
+function showIntro() {
+  document.getElementById("intro-count").textContent = daysTogether();
+  document.getElementById("intro-since").textContent = formatStartDate();
+  // First tap anywhere on the splash dismisses it and reveals the first pop-up.
+  intro.addEventListener(
+    "click",
+    () => {
+      intro.classList.add("hidden");
+      revealNew();
+    },
+    { once: true }
+  );
+}
+
 init();
+showIntro();
 console.log("Anniversary page ready ❤️");
