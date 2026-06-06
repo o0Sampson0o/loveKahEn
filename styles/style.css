@@ -131,14 +131,20 @@ body {
   padding: 14px 14px 16px;
   border-radius: 3px;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.2);
-  width: min(68vw, 280px);
+  /* frame hugs the photo so each keeps its own shape (no forced cropping) */
+  width: max-content;
+  max-width: min(72vw, 300px);
 }
 
 .polaroid-img {
   display: block;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
+  margin: 0 auto;            /* centre if a long caption widens the frame */
+  /* show the whole photo at its natural ratio, capped so big ones fit */
+  width: auto;
+  height: auto;
+  max-width: min(64vw, 272px);
+  max-height: 52vh;
+  object-fit: contain;
   background: #e9e4dc;
 }
 
