@@ -50,6 +50,22 @@ const MESSAGES = [
     text: "我不管了！！！！！\n你的男媽媽上線了！！！！\n我還是無法冷靜！\n記得 檢查護照 錢包 水壺 衣服 行李 隨身包 補給 如果能就 online check in！！！\n\n然後 祝你一路順風👍👍\n\n然後有事記得說！至少我知道一下！知道嗎？好知道了。乖😋",
     from: "me",
   },
+  {
+    text: "愛你😡",
+    from: "her",
+  },
+  {
+    text: "晚安 愛你 麽麽",
+    from: "me",
+  },
+  {
+    text: "親親😡",
+    from: "her",
+  },
+  {
+    text: "早安😘",
+    from: "me",
+  },
 ];
 
 // Each image: { src, title?, date?, description? }  -> rendered as a polaroid.
@@ -427,11 +443,12 @@ function daysTogether() {
   const start = new Date(
     START_DATE.getFullYear(),
     START_DATE.getMonth(),
-    START_DATE.getDate()
+    START_DATE.getDate(),
   );
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  return Math.max(0, Math.round((today - start) / 86400000));
+  // +1 so the day you got together counts as day 1 (inclusive count).
+  return Math.max(1, Math.round((today - start) / 86400000) + 1);
 }
 
 function formatStartDate() {
@@ -451,7 +468,7 @@ function showIntro() {
       intro.classList.add("hidden");
       revealNew();
     },
-    { once: true }
+    { once: true },
   );
 }
 
