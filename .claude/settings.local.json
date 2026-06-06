@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p assets/images)",
+      "Bash(touch assets/images/.gitkeep)",
+      "Bash(git add *)",
+      "Bash(git commit -q -m 'Initial scaffold: pure-frontend anniversary page *)"
+    ]
+  }
+}

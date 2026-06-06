@@ -1,0 +1,51 @@
+/* ---- Base / reset ---- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #f3ede7;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;            /* the "table" is a fixed canvas, no scrolling */
+  background: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* ---- The table surface ---- */
+.table {
+  position: fixed;
+  inset: 0;
+  cursor: pointer;
+}
+
+/* ---- Hint shown before first tap ---- */
+.hint {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #9a8f86;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  pointer-events: none;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+.hint.hidden {
+  display: none;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
