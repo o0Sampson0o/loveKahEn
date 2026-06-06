@@ -29,9 +29,13 @@ body {
   position: fixed;
   inset: 0;
   overflow: auto;                    /* she can scroll around the table herself */
-  cursor: pointer;
+  cursor: grab;                      /* hold-and-drag (mouse) pans the table */
   -webkit-overflow-scrolling: touch; /* momentum scrolling on iOS */
   overscroll-behavior: contain;
+}
+
+.table.grabbing {
+  cursor: grabbing;
 }
 
 /* The scrollable canvas the pop-ups live on (sized by JS, larger than screen) */

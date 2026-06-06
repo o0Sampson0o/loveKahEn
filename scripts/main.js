@@ -734,7 +734,63 @@ function handleTap() {
   revealNew();
 }
 
-table.addEventListener("click", handleTap);
+// Mouse: hold-and-drag pans the table, a plain click throws. Touch is left to
+// the browser's native scrolling (swipe to pan, tap to throw) so mobile is
+// unaffected — we only take over for pointerType "mouse".
+let mousePanning = false;
+let movedWhilePanning = false;
+let panStartX = 0;
+let panStartY = 0;
+let scrollStartX = 0;
+let scrollStartY = 0;
+const PAN_THRESHOLD = 6; // px before a press counts as a drag (suppresses throw)
+
+table.addEventListener("pointerdown", (e) => {
+  movedWhilePanning = false; // reset for every press (any input type)
+  if (e.pointerType !== "mouse" || e.button !== 0) return;
+  mousePanning = true;
+  panStartX = e.clientX;
+  panStartY = e.clientY;
+  scrollStartX = table.scrollLeft;
+  scrollStartY = table.scrollTop;
+  table.classList.add("grabbing");
+  table.setPointerCapture(e.pointerId); // keep getting moves if cursor leaves
+});
+
+table.addEventListener("pointermove", (e) => {
+  if (!mousePanning) return;
+  const dx = e.clientX - panStartX;
+  const dy = e.clientY - panStartY;
+  if (!movedWhilePanning && Math.hypot(dx, dy) > PAN_THRESHOLD) {
+    movedWhilePanning = true;
+  }
+  if (movedWhilePanning) {
+    table.scrollLeft = scrollStartX - dx;
+    table.scrollTop = scrollStartY - dy;
+  }
+});
+
+function endMousePan() {
+  if (!mousePanning) return;
+  mousePanning = false;
+  table.classList.remove("grabbing");
+}
+
+table.addEventListener("pointerup", (e) => {
+  if (e.pointerType === "mouse") endMousePan();
+});
+table.addEventListener("pointercancel", (e) => {
+  if (e.pointerType === "mouse") endMousePan();
+});
+
+table.addEventListener("click", () => {
+  // If this click ended a drag, it was a pan — don't throw.
+  if (movedWhilePanning) {
+    movedWhilePanning = false;
+    return;
+  }
+  handleTap();
+});
 
 // --- Opening splash: show the day count, tap to begin ------------------------
 
