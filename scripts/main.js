@@ -154,24 +154,134 @@ const MESSAGES = [
     text: "莫名其妙醒來然後想到暑假可以去高雄玩。不要問我為什麼那麼突然",
     from: "me",
   },
-  { text: "我在d24接你吧", from: "me" },
-  { text: "我到門口了", from: "me" },
-  { text: "等你吧 不急", from: "me" },
-  { text: "那你要吃什么", from: "her" },
-  { text: "你肚子饿吗", from: "her" },
-  { text: "还好诶 只是想说有点迟了", from: "me" },
-  { text: "bye-bye", from: "her" },
-  { text: "有大瓜！！！！", from: "me" },
-  { text: "zao o", from: "her" },
-  { text: "爱你", from: "her" },
-  { text: "😡", from: "her" },
-  { text: "速速上", from: "her" },
-  { text: "我覺得很炸裂 有人會這樣幹", from: "me" },
-  { text: "看來是放下一個重擔了", from: "me" },
-  { text: "感觉不用翘课", from: "her" },
-  { text: "今天好多人不睡觉", from: "her" },
-  { text: "什麼鬼。你搞的我現在好癢", from: "me" },
-  { text: "阿😅", from: "me" },
+  {
+    text: "🐸",
+    from: "her",
+  },
+  {
+    text: "感觉非常好吃",
+    from: "her",
+  },
+  {
+    text: "睡着了？",
+    from: "her",
+  },
+  {
+    text: "那你要吃什么",
+    from: "her",
+  },
+  {
+    text: "一起吃还是",
+    from: "her",
+  },
+  {
+    text: "我在d24接你吧",
+    from: "me",
+  },
+  {
+    text: "我到門口了",
+    from: "me",
+  },
+  {
+    text: "等你吧 不急",
+    from: "me",
+  },
+  {
+    text: "🔫🔫🔫",
+    from: "her",
+  },
+  {
+    text: "我好生气",
+    from: "her",
+  },
+  {
+    text: "我好无聊",
+    from: "her",
+  },
+  {
+    text: "又有顏質 有腦袋 有身材 有錢 有努力 有志向",
+    from: "me",
+  },
+  {
+    text: "理我",
+    from: "her",
+  },
+  {
+    text: "(video vall) 56 mins 22 secs",
+    from: "her",
+  },
+  {
+    text: "我還以爲蛋糕你要等到正式官宣才給我哦",
+    from: "her",
+  },
+  {
+    text: "爲什麽談久了你變得很難撩啊",
+    from: "her",
+  },
+  {
+    text: "我生日有沒有什麽安排",
+    from: "her",
+  },
+  {
+    text: "那你要吃什么",
+    from: "her",
+  },
+  {
+    text: "你肚子饿吗",
+    from: "her",
+  },
+  {
+    text: "还好诶 只是想说有点迟了",
+    from: "me",
+  },
+  {
+    text: "bye-bye",
+    from: "her",
+  },
+  {
+    text: "有大瓜！！！！",
+    from: "me",
+  },
+  {
+    text: "zao o",
+    from: "her",
+  },
+  {
+    text: "爱你",
+    from: "her",
+  },
+  {
+    text: "😡",
+    from: "her",
+  },
+  {
+    text: "速速上",
+    from: "her",
+  },
+  {
+    text: "我覺得很炸裂 有人會這樣幹",
+    from: "me",
+  },
+  {
+    text: "看來是放下一個重擔了",
+    from: "me",
+  },
+  {
+    text: "感觉不用翘课",
+    from: "her",
+  },
+  {
+    text: "今天好多人不睡觉",
+    from: "her",
+  },
+  {
+    text: "什麼鬼。你搞的我現在好癢",
+    from: "me",
+  },
+  {
+    text: "阿😅",
+    from: "me",
+  },
   { text: "晚安 ❤️", from: "her" },
   {
     text: "寶兒，隨機打卡🤓\n愛妳唷～\n我不知道怎麼減少妳的壓力，但希望有那麼一小瞬間能讓妳知道，有人在偷偷替妳加油😘",
@@ -308,6 +418,27 @@ const IMAGES = [
     title: "生日",
     date: "28/02/2026",
   },
+  { src: "assets/images/avatarpaper.jpg" },
+  { src: "assets/images/avatarpaper2.jpg" },
+  { src: "assets/images/bottle.jpg" },
+  { src: "assets/images/temple.jpg" },
+  { src: "assets/images/crymouse.jpg" },
+  { src: "assets/images/angrymouse.jpg" },
+  { src: "assets/images/tietie.jpg" },
+  { src: "assets/images/hall.jpg" },
+  { src: "assets/images/fishball.jpg" },
+  { src: "assets/images/cursingmouse.jpg" },
+  { src: "assets/images/liwo.jpg" },
+  { src: "assets/images/angryshark.jpg" },
+  { src: "assets/images/image.jpg" },
+  { src: "assets/images/dididi.jpg" },
+  { src: "assets/images/tonkutsu.jpg" },
+  { src: "assets/images/flower.jpg" },
+  { src: "assets/images/avatardigital.jpg" },
+  { src: "assets/images/son.jpg" },
+  { src: "assets/images/son2.jpg" },
+  { src: "assets/images/sonanddafei.jpg" },
+  { src: "assets/images/dafei.jpg" },
 ];
 
 // --- Setup -------------------------------------------------------------------
@@ -374,8 +505,7 @@ const nextImage = createBag(IMAGES);
 
 function nextMessage() {
   const useHer =
-    HER_MESSAGES.length &&
-    (!ME_MESSAGES.length || Math.random() < HER_SHARE);
+    HER_MESSAGES.length && (!ME_MESSAGES.length || Math.random() < HER_SHARE);
   return useHer ? nextHerMessage() : nextMeMessage();
 }
 
@@ -638,38 +768,83 @@ function showIntro() {
     () => {
       intro.classList.add("hidden");
       startMusic(); // first user gesture — browsers allow audio to start now
-      if (window.FX) FX.burst(window.innerWidth / 2, window.innerHeight / 2, 28);
+      if (window.FX)
+        FX.burst(window.innerWidth / 2, window.innerHeight / 2, 28);
       revealNew();
     },
     { once: true },
   );
 }
 
-// --- Background music --------------------------------------------------------
+// --- Background music (shuffled playlist) ------------------------------------
+
+// Songs play one after another in random order, with a short gap between them,
+// and never the same song twice in a row.
+const PLAYLIST = [
+  "assets/audio/song.mp3",
+  "assets/audio/song1.mp3",
+  "assets/audio/song3.mp3",
+];
+const SONG_GAP_MS = 3000; // silence between songs
+
+let playerActive = false; // whether music is meant to be playing
+let lastSong = null; // to avoid back-to-back repeats
+let gapTimer = null; // the pending "start next song" timer
+
+function pickSong() {
+  let choices = PLAYLIST;
+  if (PLAYLIST.length > 1 && lastSong) {
+    choices = PLAYLIST.filter((s) => s !== lastSong);
+  }
+  const song = choices[Math.floor(Math.random() * choices.length)];
+  lastSong = song;
+  return song;
+}
+
+function playNextSong() {
+  clearTimeout(gapTimer);
+  bgm.src = pickSong();
+  bgm.currentTime = 0;
+  const p = bgm.play();
+  if (p && p.catch) p.catch(() => {}); // ignore if blocked / file missing
+  setTimeout(updateMusicButton, 50);
+}
+
+// When a song finishes, wait the gap then play another.
+bgm.addEventListener("ended", () => {
+  if (!playerActive) return;
+  gapTimer = setTimeout(playNextSong, SONG_GAP_MS);
+});
 
 function updateMusicButton() {
-  const playing = !bgm.paused;
-  musicToggle.textContent = playing ? "🔊" : "🔇";
-  musicToggle.classList.toggle("muted", !playing);
+  musicToggle.textContent = playerActive ? "🔊" : "🔇";
+  musicToggle.classList.toggle("muted", !playerActive);
 }
 
 function startMusic() {
   bgm.volume = 0.5;
-  const p = bgm.play();
-  if (p && p.catch) p.catch(() => {}); // ignore if no file yet / autoplay blocked
-  // Update the icon shortly after, once play() has settled.
-  setTimeout(updateMusicButton, 50);
+  playerActive = true;
+  playNextSong(); // first user gesture — start the playlist
 }
 
 // Tapping the button toggles music. stopPropagation so it doesn't also count
 // as a tap on the table.
 musicToggle.addEventListener("click", (e) => {
   e.stopPropagation();
-  if (bgm.paused) {
-    const p = bgm.play();
-    if (p && p.catch) p.catch(() => {});
-  } else {
+  if (playerActive && !bgm.paused) {
+    // turn off
+    playerActive = false;
+    clearTimeout(gapTimer);
     bgm.pause();
+  } else {
+    // turn on / resume
+    playerActive = true;
+    if (!bgm.src || bgm.ended) {
+      playNextSong();
+    } else {
+      const p = bgm.play();
+      if (p && p.catch) p.catch(() => {});
+    }
   }
   setTimeout(updateMusicButton, 50);
 });
