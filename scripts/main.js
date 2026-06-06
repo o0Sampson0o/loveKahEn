@@ -220,14 +220,37 @@ function rand(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-function randomItem(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
+// A "shuffle bag": hands out every item once (in random order) before any
+// repeats, and never returns the same item twice in a row. This gives an even
+// spread instead of uniform-random's lucky clusters and back-to-back dupes.
+function createBag(items) {
+  let queue = [];
+  let last = null;
+
+  function refill() {
+    queue = shuffle(items.slice());
+    // Avoid an immediate repeat across the reshuffle boundary.
+    if (queue.length > 1 && queue[queue.length - 1] === last) {
+      const j = Math.floor(Math.random() * (queue.length - 1));
+      const end = queue.length - 1;
+      [queue[end], queue[j]] = [queue[j], queue[end]];
+    }
+  }
+
+  return function next() {
+    if (queue.length === 0) refill();
+    last = queue.pop();
+    return last;
+  };
 }
+
+const nextMessage = createBag(MESSAGES);
+const nextImage = createBag(IMAGES);
 
 // --- Building pop-ups --------------------------------------------------------
 
 function buildMessage() {
-  const msg = randomItem(MESSAGES);
+  const msg = nextMessage();
   const el = document.createElement("div");
   el.className = "popup";
   const bubble = document.createElement("div");
@@ -238,7 +261,7 @@ function buildMessage() {
 }
 
 function buildImage() {
-  const data = randomItem(IMAGES);
+  const data = nextImage();
 
   const el = document.createElement("div");
   el.className = "popup is-image";
