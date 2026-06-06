@@ -7,9 +7,10 @@
   <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
-  <!-- The "table": every click throws the current pop-up here and reveals a new one -->
+  <!-- The "table": captures taps/drags; the world inside it pans like a camera -->
   <main id="table" class="table">
-    <!-- Pop-ups (messages / images) get added here by JavaScript -->
+    <!-- Pannable surface; pop-ups (messages / images) get added here by JS -->
+    <div id="world" class="world"></div>
   </main>
 
   <!-- Gentle hint shown before the first interaction -->

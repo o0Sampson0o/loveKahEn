@@ -54,9 +54,15 @@ const IMAGES = [
 // --- Setup -------------------------------------------------------------------
 
 const table = document.getElementById("table");
+const world = document.getElementById("world"); // pannable surface (the camera)
 const hint = document.getElementById("hint");
 
-let current = null; // the pop-up sitting in the center, waiting to be thrown
+let current = null;   // the pop-up sitting in the center, waiting to be thrown
+let placeIndex = 0;   // which slot the next pop-up lands in (serpentine layout)
+let camX = 0;         // current camera translation
+let camY = 0;
+
+const COLS = 4;       // pop-ups laid out in rows of this many before wrapping
 
 function rand(min, max) {
   return Math.random() * (max - min) + min;
@@ -130,30 +136,72 @@ function buildPopup() {
   return useImage ? buildImage() : buildMessage();
 }
 
+// --- Camera (panning the world) ----------------------------------------------
+
+function viewport() {
+  return { w: window.innerWidth, h: window.innerHeight };
+}
+
+// Size of one layout slot, relative to the screen.
+function cellSize() {
+  const { w, h } = viewport();
+  return { w: Math.min(w * 0.62, 320), h: Math.min(h * 0.5, 320) };
+}
+
+// World position (slot center) for the Nth pop-up, walking left-to-right then
+// snaking back on the next row so the pile spreads across the table.
+function slotForIndex(i) {
+  const c = cellSize();
+  const row = Math.floor(i / COLS);
+  const inRow = i % COLS;
+  const col = row % 2 === 0 ? inRow : COLS - 1 - inRow; // serpentine
+  return { x: col * c.w + c.w / 2, y: row * c.h + c.h / 2 };
+}
+
+function applyCamera(x, y, animate) {
+  camX = x;
+  camY = y;
+  world.classList.toggle("dragging", !animate); // .dragging disables the transition
+  world.style.transform = `translate(${camX}px, ${camY}px)`;
+}
+
+// Pan so that a given world point sits in the middle of the screen.
+function centerOn(x, y, animate = true) {
+  const { w, h } = viewport();
+  applyCamera(w / 2 - x, h / 2 - y, animate);
+}
+
 // --- Throw + reveal ----------------------------------------------------------
 
-// Move a pop-up from the center to a random scattered spot with a slight tilt.
-function throwToTable(el) {
-  // keep a margin so bubbles don't get clipped at the edges
-  const x = rand(12, 88); // % of viewport width
-  const y = rand(14, 86); // % of viewport height
-  const tilt = rand(-14, 14);
-  el.style.left = x + "%";
-  el.style.top = y + "%";
-  el.style.setProperty("--tilt", tilt + "deg");
+function placeAt(el, x, y) {
+  el.style.left = x + "px";
+  el.style.top = y + "px";
+}
+
+// Demote the current pop-up: it stays where it is, tilts, and nudges a touch
+// for an organic "tossed on the table" feel.
+function throwCurrent() {
+  const el = current;
+  el.classList.remove("current"); // stop glow/breathing
+  el.classList.add("thrown");
+  el.style.setProperty("--tilt", rand(-14, 14) + "deg");
+  placeAt(el, parseFloat(el.style.left) + rand(-28, 28),
+              parseFloat(el.style.top) + rand(-22, 22));
 }
 
 function revealNew() {
   const el = buildPopup();
+  const slot = slotForIndex(placeIndex);
+  placeAt(el, slot.x, slot.y);
   el.classList.add("entering", "current");
-  table.appendChild(el);
-  // remove the entrance class once it's done so the throw transition is clean
+  world.appendChild(el);
   el.addEventListener(
     "animationend",
     () => el.classList.remove("entering"),
     { once: true }
   );
   current = el;
+  centerOn(slot.x, slot.y, true); // glide the table over to the fresh spot
 }
 
 function handleTap() {
@@ -161,13 +209,57 @@ function handleTap() {
     hint.classList.add("hidden");
   }
   if (current) {
-    current.classList.remove("current"); // demote: stop glow/breathing
-    current.classList.add("thrown");
-    throwToTable(current);
+    throwCurrent();
+    placeIndex++;
   }
   revealNew();
 }
 
-table.addEventListener("click", handleTap);
+// --- Input: tap to throw, drag to pan the table ------------------------------
+
+let pointerDown = false;
+let dragging = false;
+let startX = 0;
+let startY = 0;
+let camStartX = 0;
+let camStartY = 0;
+const DRAG_THRESHOLD = 8; // px of movement before a press becomes a drag
+
+table.addEventListener("pointerdown", (e) => {
+  pointerDown = true;
+  dragging = false;
+  startX = e.clientX;
+  startY = e.clientY;
+  camStartX = camX;
+  camStartY = camY;
+});
+
+table.addEventListener("pointermove", (e) => {
+  if (!pointerDown) return;
+  const dx = e.clientX - startX;
+  const dy = e.clientY - startY;
+  if (!dragging && Math.hypot(dx, dy) > DRAG_THRESHOLD) dragging = true;
+  if (dragging) applyCamera(camStartX + dx, camStartY + dy, false);
+});
+
+function endPointer() {
+  if (!pointerDown) return;
+  pointerDown = false;
+  if (dragging) {
+    world.classList.remove("dragging"); // re-enable smooth panning next time
+  } else {
+    handleTap(); // a clean press (no drag) throws + reveals
+  }
+}
+
+table.addEventListener("pointerup", endPointer);
+table.addEventListener("pointercancel", endPointer);
+
+// Keep the live pop-up centered if the screen is resized / rotated.
+window.addEventListener("resize", () => {
+  if (current) {
+    centerOn(parseFloat(current.style.left), parseFloat(current.style.top), false);
+  }
+});
 
 console.log("Anniversary page ready ❤️");

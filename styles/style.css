@@ -24,11 +24,30 @@ body {
   user-select: none;
 }
 
-/* ---- The table surface ---- */
+/* ---- The table surface (captures taps + drags) ---- */
 .table {
   position: fixed;
   inset: 0;
   cursor: pointer;
+  touch-action: none;          /* let us pan with touch instead of scrolling */
+}
+
+.table:active {
+  cursor: grabbing;
+}
+
+/* ---- The world: a large surface we pan like a camera ---- */
+.world {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+  pointer-events: none;        /* taps/drags always land on the table */
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+
+.world.dragging {
+  transition: none;            /* follow the finger 1:1 while dragging */
 }
 
 /* ---- A pop-up (message bubble or image) ---- */
