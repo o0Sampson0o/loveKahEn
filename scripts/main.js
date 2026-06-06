@@ -85,7 +85,7 @@ function throwToTable(el) {
 
 function revealNew() {
   const el = buildPopup();
-  el.classList.add("entering");
+  el.classList.add("entering", "current");
   table.appendChild(el);
   // remove the entrance class once it's done so the throw transition is clean
   el.addEventListener(
@@ -101,6 +101,8 @@ function handleTap() {
     hint.classList.add("hidden");
   }
   if (current) {
+    current.classList.remove("current"); // demote: stop glow/breathing
+    current.classList.add("thrown");
     throwToTable(current);
   }
   revealNew();

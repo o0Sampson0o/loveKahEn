@@ -46,6 +46,38 @@ body {
   will-change: left, top, transform;
 }
 
+/* The live, centered pop-up: lifted + glowing so it stands out from the pile */
+.popup.current {
+  --scale: 1.05;
+  z-index: 10;
+  animation: breathe 2.6s ease-in-out infinite;
+}
+
+.popup.current .bubble,
+.popup.current .photo {
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.22),
+    0 0 0 3px rgba(255, 255, 255, 0.55),
+    0 0 26px 6px rgba(255, 196, 120, 0.75);
+}
+
+/* Thrown pop-ups settle back: smaller, calmer, slightly faded into the table */
+.popup.thrown {
+  --scale: 0.92;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+/* gentle "breathing" glow on the live pop-up to draw the eye */
+@keyframes breathe {
+  0%, 100% {
+    transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(1.05);
+  }
+  50% {
+    transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(1.08);
+  }
+}
+
 /* entrance pop for the freshly-shown (centered) pop-up */
 .popup.entering {
   animation: pop-in 0.32s cubic-bezier(0.2, 1.2, 0.3, 1);
