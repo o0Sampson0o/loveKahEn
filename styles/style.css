@@ -24,40 +24,26 @@ body {
   user-select: none;
 }
 
-/* ---- The table surface (captures taps + drags) ---- */
+/* ---- The table: a large, manually-scrollable surface ---- */
 .table {
   position: fixed;
   inset: 0;
+  overflow: auto;                    /* she can scroll around the table herself */
   cursor: pointer;
-  touch-action: none;          /* let us pan with touch instead of scrolling */
+  -webkit-overflow-scrolling: touch; /* momentum scrolling on iOS */
+  overscroll-behavior: contain;
 }
 
-.table:active {
-  cursor: grabbing;
-}
-
-/* ---- The world: a large surface we pan like a camera ---- */
-.world {
-  position: absolute;
-  inset: 0;
-  transform-origin: 0 0;
-  pointer-events: none;        /* taps/drags always land on the table */
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  will-change: transform;
-}
-
-.world.dragging {
-  transition: none;            /* follow the finger 1:1 while dragging */
+/* The scrollable canvas the pop-ups live on (sized by JS, larger than screen) */
+.surface {
+  position: relative;
 }
 
 /* ---- A pop-up (message bubble or image) ---- */
 .popup {
-  position: absolute;
-  /* default position = center; overwritten when thrown */
-  left: 50%;
-  top: 50%;
+  position: absolute;                /* placed by px coords on the surface */
   max-width: min(78vw, 420px);
-  /* translate centers it; --tilt/--scale animate the throw + entrance */
+  /* translate centers it on its point; --tilt/--scale animate throw + entrance */
   transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(var(--scale, 1));
   transition: left 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
               top 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -65,8 +51,12 @@ body {
   will-change: left, top, transform;
 }
 
-/* The live, centered pop-up: lifted + glowing so it stands out from the pile */
+/* The live pop-up floats fixed in the centre of the screen, above the table,
+   so it stays readable no matter where she has scrolled. */
 .popup.current {
+  position: fixed;
+  left: 50%;
+  top: 50%;
   --scale: 1.05;
   z-index: 10;
   animation: breathe 2.6s ease-in-out infinite;
@@ -202,3 +192,27 @@ body {
   0%, 100% { opacity: 0.4; }
   50%      { opacity: 1; }
 }
+
+/* ---- Directional hint: shown when a throw lands off-screen ---- */
+.toss-hint {
+  position: fixed;
+  z-index: 20;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(40, 36, 32, 0.82);
+  color: #fff;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.toss-hint.show {
+  opacity: 1;
+}
+
+.toss-hint.up    { top: 16px;    left: 50%; transform: translateX(-50%); }
+.toss-hint.down  { bottom: 16px; left: 50%; transform: translateX(-50%); }
+.toss-hint.left  { left: 16px;   top: 50%;  transform: translateY(-50%); }
+.toss-hint.right { right: 16px;  top: 50%;  transform: translateY(-50%); }

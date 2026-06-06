@@ -53,16 +53,17 @@ const IMAGES = [
 
 // --- Setup -------------------------------------------------------------------
 
-const table = document.getElementById("table");
-const world = document.getElementById("world"); // pannable surface (the camera)
+const table = document.getElementById("table");   // scroll container
+const surface = document.getElementById("surface"); // the canvas pop-ups live on
 const hint = document.getElementById("hint");
+const tossHint = document.getElementById("toss-hint");
 
-let current = null;   // the pop-up sitting in the center, waiting to be thrown
-let placeIndex = 0;   // which slot the next pop-up lands in (serpentine layout)
-let camX = 0;         // current camera translation
-let camY = 0;
+let current = null;   // the live pop-up floating in the centre, waiting to be thrown
+let surfaceW = 0;     // size of the scrollable canvas (set in init)
+let surfaceH = 0;
 
-const COLS = 4;       // pop-ups laid out in rows of this many before wrapping
+const DENSITY = 5;    // max pop-ups per screen-sized area before it's "crowded"
+const MARGIN = 90;    // keep thrown items this far from an area's edges (px)
 
 function rand(min, max) {
   return Math.random() * (max - min) + min;
@@ -136,130 +137,157 @@ function buildPopup() {
   return useImage ? buildImage() : buildMessage();
 }
 
-// --- Camera (panning the world) ----------------------------------------------
+// --- Surface setup -----------------------------------------------------------
 
-function viewport() {
-  return { w: window.innerWidth, h: window.innerHeight };
+// The table is several screens wide/tall so there's room to scatter things.
+// We start scrolled to the middle so the pile can grow in every direction.
+function init() {
+  surfaceW = table.clientWidth * 5;
+  surfaceH = table.clientHeight * 5;
+  surface.style.width = surfaceW + "px";
+  surface.style.height = surfaceH + "px";
+  table.scrollLeft = table.clientWidth * 2;
+  table.scrollTop = table.clientHeight * 2;
 }
 
-// Size of one layout slot, relative to the screen.
-function cellSize() {
-  const { w, h } = viewport();
-  return { w: Math.min(w * 0.62, 320), h: Math.min(h * 0.5, 320) };
+// --- Crowding + spot-finding -------------------------------------------------
+
+function thrownItems() {
+  return Array.from(surface.querySelectorAll(".popup.thrown"));
 }
 
-// World position (slot center) for the Nth pop-up, walking left-to-right then
-// snaking back on the next row so the pile spreads across the table.
-function slotForIndex(i) {
-  const c = cellSize();
-  const row = Math.floor(i / COLS);
-  const inRow = i % COLS;
-  const col = row % 2 === 0 ? inRow : COLS - 1 - inRow; // serpentine
-  return { x: col * c.w + c.w / 2, y: row * c.h + c.h / 2 };
+// A thrown item's point IS its centre (it's translated by -50%, -50%).
+function centerOf(el) {
+  return { x: parseFloat(el.style.left), y: parseFloat(el.style.top) };
 }
 
-function applyCamera(x, y, animate) {
-  camX = x;
-  camY = y;
-  world.classList.toggle("dragging", !animate); // .dragging disables the transition
-  world.style.transform = `translate(${camX}px, ${camY}px)`;
+function countInRect(items, x0, y0, w, h) {
+  return items.filter((el) => {
+    const c = centerOf(el);
+    return c.x >= x0 && c.x <= x0 + w && c.y >= y0 && c.y <= y0 + h;
+  }).length;
 }
 
-// Pan so that a given world point sits in the middle of the screen.
-function centerOn(x, y, animate = true) {
-  const { w, h } = viewport();
-  applyCamera(w / 2 - x, h / 2 - y, animate);
+// Pick a point inside a rectangle, biased towards open space (away from items).
+function spotInRect(items, x0, y0, w, h) {
+  let best = null;
+  let bestDist = -1;
+  for (let i = 0; i < 16; i++) {
+    const x = rand(x0 + MARGIN, x0 + w - MARGIN);
+    const y = rand(y0 + MARGIN, y0 + h - MARGIN);
+    let nearest = Infinity;
+    for (const el of items) {
+      const c = centerOf(el);
+      nearest = Math.min(nearest, Math.hypot(c.x - x, c.y - y));
+    }
+    if (nearest > bestDist) {
+      bestDist = nearest;
+      best = { x, y };
+    }
+    if (nearest > 150) break; // comfortably empty — good enough
+  }
+  return best;
+}
+
+// Decide where a thrown pop-up should land. If the current screen-area already
+// holds DENSITY items, look to a neighbouring area and report the direction.
+function chooseSpot() {
+  const x0 = table.scrollLeft;
+  const y0 = table.scrollTop;
+  const w = table.clientWidth;
+  const h = table.clientHeight;
+  const items = thrownItems();
+
+  if (countInRect(items, x0, y0, w, h) < DENSITY) {
+    return { ...spotInRect(items, x0, y0, w, h), direction: null };
+  }
+
+  // Crowded here — try neighbouring areas (random order so it varies).
+  const neighbours = shuffle([
+    { direction: "up", dx: 0, dy: -1 },
+    { direction: "down", dx: 0, dy: 1 },
+    { direction: "left", dx: -1, dy: 0 },
+    { direction: "right", dx: 1, dy: 0 },
+  ]);
+  for (const n of neighbours) {
+    const nx = x0 + n.dx * w;
+    const ny = y0 + n.dy * h;
+    if (nx < 0 || ny < 0 || nx + w > surfaceW || ny + h > surfaceH) continue;
+    if (countInRect(items, nx, ny, w, h) < DENSITY) {
+      return { ...spotInRect(items, nx, ny, w, h), direction: n.direction };
+    }
+  }
+
+  // Everything nearby is full — just drop it somewhere in view.
+  return { ...spotInRect(items, x0, y0, w, h), direction: null };
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// --- Directional toss hint ---------------------------------------------------
+
+const ARROWS = { up: "↑", down: "↓", left: "←", right: "→" };
+let tossHintTimer = null;
+
+function showTossHint(direction) {
+  tossHint.textContent = ARROWS[direction] + " thrown over there";
+  tossHint.className = "toss-hint show " + direction;
+  clearTimeout(tossHintTimer);
+  tossHintTimer = setTimeout(() => tossHint.classList.remove("show"), 1700);
 }
 
 // --- Throw + reveal ----------------------------------------------------------
 
-function placeAt(el, x, y) {
-  el.style.left = x + "px";
-  el.style.top = y + "px";
-}
-
-// Demote the current pop-up: it stays where it is, tilts, and nudges a touch
-// for an organic "tossed on the table" feel.
+// Demote the live pop-up onto the table: freeze it where it visually is, then
+// glide it to a chosen (possibly off-screen) spot with a slight tilt.
 function throwCurrent() {
   const el = current;
-  el.classList.remove("current"); // stop glow/breathing
+
+  // Where it sits right now, in surface coordinates (it was screen-centred).
+  const fromX = table.scrollLeft + table.clientWidth / 2;
+  const fromY = table.scrollTop + table.clientHeight / 2;
+
+  el.classList.remove("current"); // becomes absolute on the surface
+  el.style.left = fromX + "px";
+  el.style.top = fromY + "px";
+  void el.offsetWidth; // commit that starting point so the move animates
+
+  const dest = chooseSpot();
   el.classList.add("thrown");
   el.style.setProperty("--tilt", rand(-14, 14) + "deg");
-  placeAt(el, parseFloat(el.style.left) + rand(-28, 28),
-              parseFloat(el.style.top) + rand(-22, 22));
+  el.style.left = dest.x + "px";
+  el.style.top = dest.y + "px";
+
+  if (dest.direction) showTossHint(dest.direction);
 }
 
 function revealNew() {
   const el = buildPopup();
-  const slot = slotForIndex(placeIndex);
-  placeAt(el, slot.x, slot.y);
-  el.classList.add("entering", "current");
-  world.appendChild(el);
+  el.classList.add("entering", "current"); // floats fixed in the screen centre
+  surface.appendChild(el);
   el.addEventListener(
     "animationend",
     () => el.classList.remove("entering"),
     { once: true }
   );
   current = el;
-  centerOn(slot.x, slot.y, true); // glide the table over to the fresh spot
 }
 
 function handleTap() {
   if (hint && !hint.classList.contains("hidden")) {
     hint.classList.add("hidden");
   }
-  if (current) {
-    throwCurrent();
-    placeIndex++;
-  }
+  if (current) throwCurrent();
   revealNew();
 }
 
-// --- Input: tap to throw, drag to pan the table ------------------------------
+table.addEventListener("click", handleTap);
 
-let pointerDown = false;
-let dragging = false;
-let startX = 0;
-let startY = 0;
-let camStartX = 0;
-let camStartY = 0;
-const DRAG_THRESHOLD = 8; // px of movement before a press becomes a drag
-
-table.addEventListener("pointerdown", (e) => {
-  pointerDown = true;
-  dragging = false;
-  startX = e.clientX;
-  startY = e.clientY;
-  camStartX = camX;
-  camStartY = camY;
-});
-
-table.addEventListener("pointermove", (e) => {
-  if (!pointerDown) return;
-  const dx = e.clientX - startX;
-  const dy = e.clientY - startY;
-  if (!dragging && Math.hypot(dx, dy) > DRAG_THRESHOLD) dragging = true;
-  if (dragging) applyCamera(camStartX + dx, camStartY + dy, false);
-});
-
-function endPointer() {
-  if (!pointerDown) return;
-  pointerDown = false;
-  if (dragging) {
-    world.classList.remove("dragging"); // re-enable smooth panning next time
-  } else {
-    handleTap(); // a clean press (no drag) throws + reveals
-  }
-}
-
-table.addEventListener("pointerup", endPointer);
-table.addEventListener("pointercancel", endPointer);
-
-// Keep the live pop-up centered if the screen is resized / rotated.
-window.addEventListener("resize", () => {
-  if (current) {
-    centerOn(parseFloat(current.style.left), parseFloat(current.style.top), false);
-  }
-});
-
+init();
 console.log("Anniversary page ready ❤️");

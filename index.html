@@ -7,14 +7,17 @@
   <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
-  <!-- The "table": captures taps/drags; the world inside it pans like a camera -->
+  <!-- The "table": a scrollable surface. Tap to throw, scroll to look around. -->
   <main id="table" class="table">
-    <!-- Pannable surface; pop-ups (messages / images) get added here by JS -->
-    <div id="world" class="world"></div>
+    <!-- The canvas pop-ups (messages / images) get scattered onto, by JS -->
+    <div id="surface" class="surface"></div>
   </main>
 
   <!-- Gentle hint shown before the first interaction -->
   <div id="hint" class="hint">tap anywhere</div>
+
+  <!-- Directional hint shown when a throw lands off-screen -->
+  <div id="toss-hint" class="toss-hint"></div>
 
   <script src="scripts/main.js"></script>
 </body>
