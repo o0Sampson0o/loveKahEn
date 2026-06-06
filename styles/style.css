@@ -250,3 +250,72 @@ body {
 .toss-hint.down  { bottom: 16px; left: 50%; transform: translateX(-50%); }
 .toss-hint.left  { left: 16px;   top: 50%;  transform: translateY(-50%); }
 .toss-hint.right { right: 16px;  top: 50%;  transform: translateY(-50%); }
+
+/* ---- Particle effect canvas (decoration; ignores clicks) ---- */
+.fx-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 60;                 /* above the splash so hearts show on load too */
+  pointer-events: none;
+}
+
+/* ---- Live memories counter ---- */
+.counter {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 45;
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(4px);
+  color: #c0506a;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  opacity: 0;                  /* hidden until the first memory is revealed */
+  transition: opacity 0.4s ease;
+}
+
+.counter.show {
+  opacity: 1;
+}
+
+.counter.pop {
+  animation: counter-pop 0.3s ease;
+}
+
+@keyframes counter-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.22); }
+  100% { transform: scale(1); }
+}
+
+/* ---- Music toggle button ---- */
+.music-toggle {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 45;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+
+.music-toggle:active {
+  transform: scale(0.9);
+}
+
+.music-toggle.muted {
+  opacity: 0.65;
+}

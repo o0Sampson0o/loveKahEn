@@ -66,6 +66,117 @@ const MESSAGES = [
     text: "早安😘",
     from: "me",
   },
+  { text: "愛你", from: "me" },
+  { text: "麽麽", from: "me" },
+  { text: "晚安", from: "me" },
+  { text: "woi 講愛我", from: "me" },
+  { text: "晚安", from: "her" },
+  { text: "不要", from: "her" },
+  { text: "muanuamua", from: "me" },
+  { text: "來 寶寶", from: "me" },
+  { text: "angry kiss", from: "her" },
+  { text: "親親", from: "her" },
+  { text: "muamua", from: "me" },
+  { text: "親親", from: "me" },
+  { text: "親親", from: "her" },
+  { text: "早安~", from: "me" },
+  { text: "真的很愛你", from: "her" },
+  { text: "就愛聽這句", from: "me" },
+  { text: "愛你", from: "her" },
+  { text: "愛你", from: "me" },
+  { text: "应该没问题吧", from: "her" },
+  { text: "看你而已", from: "her" },
+  { text: "愛你too 麽麽", from: "me" },
+  { text: "愛你", from: "her" },
+  { text: "麽麽", from: "her" },
+  { text: "老子很想你！！！", from: "me" },
+  { text: "主要是想你了", from: "me" },
+  { text: "我不戀腦更好啊 代表我感性上理性上都愛你", from: "me" },
+  { text: "想要談戀愛了", from: "her" },
+  { text: "muamua", from: "me" },
+  { text: "愛你嗲", from: "me" },
+  { text: "我知道我很可愛", from: "her" },
+  { text: "大哥哥太厲害了", from: "her" },
+  { text: "放開我寶寶！！", from: "me" },
+  { text: "我只是以防萬一你睡死了 沒事就好", from: "me" },
+  { text: "愛你", from: "her" },
+  { text: "來 寶寶", from: "me" },
+  { text: "angry kiss", from: "her" },
+  { text: "angry kiss", from: "me" },
+  { text: "muanuamua", from: "me" },
+  { text: "你生氣我", from: "her" },
+  { text: "甜点", from: "her" },
+  { text: "我去接你", from: "me" },
+  { text: "接你下班然后去买宵夜", from: "me" },
+  { text: "送你回家", from: "me" },
+  { text: "听起来很浪漫", from: "me" },
+  { text: "好喔好喔", from: "her" },
+  { text: "沒有你的照片😭", from: "me" },
+  { text: "一起健身~~", from: "me" },
+  { text: "5分鐘內到", from: "me" },
+  { text: "沒到的話就等我", from: "me" },
+  { text: "手機沒電了", from: "me" },
+  { text: "那個鎖是假的 ❤️", from: "her" },
+  { text: "我當場就哭了", from: "her" },
+  { text: "大哥哥太厲害了", from: "me" },
+  { text: "你的衣服真的是fish ball", from: "her" },
+  { text: "誰穿誰fishball", from: "her" },
+  { text: "你穿起來也fishball？", from: "me" },
+  { text: "我要看看！", from: "me" },
+  { text: "你在哪裡", from: "her" },
+  { text: "你选吧", from: "her" },
+  { text: "剛下課", from: "me" },
+  { text: "到宿舍門口了", from: "me" },
+  { text: "出來了", from: "me" },
+  { text: "我6.之前會結束", from: "her" },
+  { text: "我先去找你", from: "me" },
+  { text: "你到了？", from: "her" },
+  { text: "快了", from: "me" },
+  { text: "準備出門", from: "her" },
+  { text: "你不猜猜看哦", from: "me" },
+  {
+    text: "如果想跟我講理由的話 可以講喔。不想說的話我一樣愛你的。然後6周月快樂 我沒準備什麼禮物抱歉😔。之後補給你！",
+    from: "me",
+  },
+  {
+    text: "我頂不住了 先睡了哈。看你一眼終於能安心睡覺了。明天午餐再一起吃。",
+    from: "me",
+  },
+  { text: "晚安 麼麼 愛你", from: "me" },
+  { text: "愛你 麼麼", from: "me" },
+  { text: "晚安咯 愛寶", from: "me" },
+  { text: "晚安 ❤️", from: "her" },
+  { text: "我還是有點擔心喔", from: "me" },
+  { text: "看起來你心情不好", from: "me" },
+  { text: "到你需要學AI的時候也可以放心了", from: "me" },
+  { text: "今天的話會很晚嗯嗯 加油喔 別累壞了 (˘³˘)", from: "me" },
+  {
+    text: "莫名其妙醒來然後想到暑假可以去高雄玩。不要問我為什麼那麼突然",
+    from: "me",
+  },
+  { text: "我在d24接你吧", from: "me" },
+  { text: "我到門口了", from: "me" },
+  { text: "等你吧 不急", from: "me" },
+  { text: "那你要吃什么", from: "her" },
+  { text: "你肚子饿吗", from: "her" },
+  { text: "还好诶 只是想说有点迟了", from: "me" },
+  { text: "bye-bye", from: "her" },
+  { text: "有大瓜！！！！", from: "me" },
+  { text: "zao o", from: "her" },
+  { text: "爱你", from: "her" },
+  { text: "😡", from: "her" },
+  { text: "速速上", from: "her" },
+  { text: "我覺得很炸裂 有人會這樣幹", from: "me" },
+  { text: "看來是放下一個重擔了", from: "me" },
+  { text: "感觉不用翘课", from: "her" },
+  { text: "今天好多人不睡觉", from: "her" },
+  { text: "什麼鬼。你搞的我現在好癢", from: "me" },
+  { text: "阿😅", from: "me" },
+  { text: "晚安 ❤️", from: "her" },
+  {
+    text: "寶兒，隨機打卡🤓\n愛妳唷～\n我不知道怎麼減少妳的壓力，但希望有那麼一小瞬間能讓妳知道，有人在偷偷替妳加油😘",
+    from: "me",
+  },
 ];
 
 // Each image: { src, title?, date?, description? }  -> rendered as a polaroid.
@@ -205,6 +316,9 @@ const table = document.getElementById("table"); // scroll container
 const surface = document.getElementById("surface"); // the canvas pop-ups live on
 const intro = document.getElementById("intro"); // opening splash
 const tossHint = document.getElementById("toss-hint");
+const counterEl = document.getElementById("counter"); // live memories tally
+const bgm = document.getElementById("bgm"); // background music
+const musicToggle = document.getElementById("music-toggle");
 
 // The day you got together (year, month-1, day). Months are 0-indexed: 11 = Dec.
 const START_DATE = new Date(2025, 11, 6); // 6 Dec 2025
@@ -212,6 +326,7 @@ const START_DATE = new Date(2025, 11, 6); // 6 Dec 2025
 let current = null; // the live pop-up floating in the centre, waiting to be thrown
 let surfaceW = 0; // size of the scrollable canvas (set in init)
 let surfaceH = 0;
+let memories = 0; // how many pop-ups have been revealed so far
 
 const DENSITY = 5; // max pop-ups per screen-sized area before it's "crowded"
 const MARGIN = 90; // keep thrown items this far from an area's edges (px)
@@ -244,8 +359,25 @@ function createBag(items) {
   };
 }
 
-const nextMessage = createBag(MESSAGES);
+// Split messages by sender so we can balance how often each side appears.
+// She wrote fewer messages, so plain shuffling would show hers less often.
+const HER_MESSAGES = MESSAGES.filter((m) => m.from === "her");
+const ME_MESSAGES = MESSAGES.filter((m) => m.from === "me");
+
+// Chance that a shown message is hers. 0.5 = both sides equally often;
+// 0.55 makes hers appear a bit more than yours. Tune to taste.
+const HER_SHARE = 0.55;
+
+const nextHerMessage = createBag(HER_MESSAGES);
+const nextMeMessage = createBag(ME_MESSAGES);
 const nextImage = createBag(IMAGES);
+
+function nextMessage() {
+  const useHer =
+    HER_MESSAGES.length &&
+    (!ME_MESSAGES.length || Math.random() < HER_SHARE);
+  return useHer ? nextHerMessage() : nextMeMessage();
+}
 
 // --- Building pop-ups --------------------------------------------------------
 
@@ -438,6 +570,9 @@ function throwCurrent() {
   el.style.left = dest.x + "px";
   el.style.top = dest.y + "px";
 
+  // A happy little burst from the centre of the screen as it's tossed.
+  if (window.FX) FX.burst(window.innerWidth / 2, window.innerHeight / 2, 18);
+
   if (dest.direction) showTossHint(dest.direction);
 }
 
@@ -449,6 +584,19 @@ function revealNew() {
     once: true,
   });
   current = el;
+  bumpCounter();
+}
+
+// --- Live memories counter ---------------------------------------------------
+
+function bumpCounter() {
+  memories++;
+  counterEl.textContent = "♡ " + memories;
+  counterEl.classList.add("show");
+  // brief pop animation each time it changes
+  counterEl.classList.remove("pop");
+  void counterEl.offsetWidth;
+  counterEl.classList.add("pop");
 }
 
 function handleTap() {
@@ -489,12 +637,44 @@ function showIntro() {
     "click",
     () => {
       intro.classList.add("hidden");
+      startMusic(); // first user gesture — browsers allow audio to start now
+      if (window.FX) FX.burst(window.innerWidth / 2, window.innerHeight / 2, 28);
       revealNew();
     },
     { once: true },
   );
 }
 
+// --- Background music --------------------------------------------------------
+
+function updateMusicButton() {
+  const playing = !bgm.paused;
+  musicToggle.textContent = playing ? "🔊" : "🔇";
+  musicToggle.classList.toggle("muted", !playing);
+}
+
+function startMusic() {
+  bgm.volume = 0.5;
+  const p = bgm.play();
+  if (p && p.catch) p.catch(() => {}); // ignore if no file yet / autoplay blocked
+  // Update the icon shortly after, once play() has settled.
+  setTimeout(updateMusicButton, 50);
+}
+
+// Tapping the button toggles music. stopPropagation so it doesn't also count
+// as a tap on the table.
+musicToggle.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (bgm.paused) {
+    const p = bgm.play();
+    if (p && p.catch) p.catch(() => {});
+  } else {
+    bgm.pause();
+  }
+  setTimeout(updateMusicButton, 50);
+});
+
 init();
 showIntro();
+updateMusicButton();
 console.log("Anniversary page ready ❤️");
