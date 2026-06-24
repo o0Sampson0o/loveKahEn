@@ -6,21 +6,27 @@
   <!-- Keep this private page out of search engines -->
   <meta name="robots" content="noindex, nofollow" />
   <title>For You ❤️</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
   <!-- The "table": a scrollable surface. Tap to throw, scroll to look around. -->
   <main id="table" class="table">
-    <!-- The canvas pop-ups (messages / images) get scattered onto, by JS -->
+    <!-- The pop-ups (messages / images) get scattered onto this, by JS -->
     <div id="surface" class="surface"></div>
   </main>
 
-  <!-- Opening splash: big day count, tap to begin -->
+  <!-- Opening splash: the fancy day-count cover, tap to begin -->
   <div id="intro" class="intro">
-    <div class="intro-count" id="intro-count">—</div>
-    <div class="intro-label">days together</div>
-    <div class="intro-since" id="intro-since"></div>
-    <div class="intro-cta">tap to begin</div>
+    <div class="intro-inner">
+      <div class="intro-eyebrow">we've been together for</div>
+      <div class="intro-count" id="intro-count">0</div>
+      <div class="intro-label">days</div>
+      <div class="intro-since" id="intro-since"></div>
+      <div class="intro-cta">tap <span class="dot">❤️</span> to begin</div>
+    </div>
   </div>
 
   <!-- Directional hint shown when a throw lands off-screen -->

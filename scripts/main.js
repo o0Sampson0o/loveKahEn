@@ -333,7 +333,8 @@ function throwCurrent() {
 
   // Footprint once it settles on the table. offsetWidth/Height are the layout
   // size (transform-independent); the thrown scale shrinks it (images most).
-  const scale = el.classList.contains("is-image") ? 0.45 : 0.85;
+  // These match the .thrown scales in CSS (.5 image / .86 message).
+  const scale = el.classList.contains("is-image") ? 0.5 : 0.86;
   const fw = el.offsetWidth * scale;
   const fh = el.offsetHeight * scale;
   const radius = 0.5 * Math.hypot(fw, fh);
@@ -457,11 +458,27 @@ function formatStartDate() {
   const d = START_DATE;
   const dd = String(d.getDate()).padStart(2, "0");
   const mm = String(d.getMonth() + 1).padStart(2, "0");
-  return `since ${dd}-${mm}-${d.getFullYear()}`;
+  return `since ${dd} · ${mm} · ${d.getFullYear()}`;
+}
+
+// Count the day number up from 0 to its real value, eased, for the intro.
+function animateCount(el, target, dur) {
+  const t0 = performance.now();
+  function step(t) {
+    const k = Math.min(1, (t - t0) / dur);
+    const eased = 1 - Math.pow(1 - k, 3); // ease-out cubic
+    el.textContent = Math.round(eased * target);
+    if (k < 1) requestAnimationFrame(step);
+    else el.textContent = target; // land exactly on the real value
+  }
+  requestAnimationFrame(step);
 }
 
 function showIntro() {
-  document.getElementById("intro-count").textContent = daysTogether();
+  const countEl = document.getElementById("intro-count");
+  countEl.textContent = "0";
+  // let the intro lines rise in first, then count up to today's value
+  setTimeout(() => animateCount(countEl, daysTogether(), 1500), 450);
   document.getElementById("intro-since").textContent = formatStartDate();
   // First tap anywhere on the splash dismisses it and reveals the first pop-up.
   intro.addEventListener(

@@ -6,20 +6,35 @@
 }
 
 :root {
-  --bg: #efe7df;
-  --sent-bg: #4f8cff;       /* your messages */
-  --sent-fg: #ffffff;
-  --recv-bg: #ffffff;       /* her messages */
-  --recv-fg: #1c1c1e;
+  /* established palette */
+  --bg:        #efe7df;     /* warm greige surface */
+  --sent-bg:   #4f8cff;     /* his messages */
+  --sent-fg:   #ffffff;
+  --recv-bg:   #ffffff;     /* her messages */
+  --recv-fg:   #1c1c1e;
+  --rose:      #c0506a;     /* romantic accent */
+  --label:     #6b6259;
+  --label-2:   #9a8f86;
+  --polaroid:  #fffef9;
+
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --hand: "Caveat", "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+
+  /* refined, believable resting shadow (soft + tight contact) */
+  --shadow-rest: 0 1px 2px rgba(60, 40, 30, .12),
+                 0 10px 22px rgba(60, 40, 30, .14);
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --spring: cubic-bezier(.2, 1.25, .35, 1);
 }
 
 html,
 body {
   height: 100%;
   width: 100%;
-  overflow: hidden;            /* the "table" is a fixed canvas, no scrolling */
+  overflow: hidden;              /* the "table" is a fixed canvas, no page scroll */
   background: var(--bg);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--sans);
+  color: var(--recv-fg);
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
@@ -28,82 +43,74 @@ body {
 .table {
   position: fixed;
   inset: 0;
-  overflow: auto;                    /* she can scroll around the table herself */
+  overflow: auto;                    /* she can scroll/pan around the table */
   cursor: grab;                      /* hold-and-drag (mouse) pans the table */
+  background: var(--bg);             /* honest flat fill */
   -webkit-overflow-scrolling: touch; /* momentum scrolling on iOS */
   overscroll-behavior: contain;
 }
 
-.table.grabbing {
-  cursor: grabbing;
-}
+.table.grabbing { cursor: grabbing; }
 
 /* The scrollable canvas the pop-ups live on (sized by JS, larger than screen) */
-.surface {
-  position: relative;
-}
+.surface { position: relative; }
 
-/* ---- A pop-up (message bubble or image) ---- */
+/* ---- A pop-up (message thread or image) ---- */
 .popup {
   position: absolute;                /* placed by px coords on the surface */
-  max-width: min(78vw, 420px);
   /* translate centers it on its point; --tilt/--scale animate throw + entrance */
   transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(var(--scale, 1));
-  transition: left 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
-              top 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
-              transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: left .6s var(--ease),
+              top .6s var(--ease),
+              transform .6s var(--ease),
+              opacity .6s ease,
+              filter .6s ease;
   will-change: left, top, transform;
 }
 
-/* The live pop-up floats fixed in the centre of the screen, above the table,
-   so it stays readable no matter where she has scrolled. */
+/* The held (live) pop-up floats fixed in the centre of the screen, above the
+   table, so it stays readable no matter where she has scrolled. */
 .popup.current {
   position: fixed;
   left: 50%;
   top: 50%;
-  --scale: 1.05;
+  --scale: 1.04;
   z-index: 10;
-  animation: breathe 2.6s ease-in-out infinite;
+  animation: breathe 3.4s ease-in-out infinite;
 }
 
+/* held in soft warm light — done with box-shadow, no gradient fill */
 .popup.current .bubble,
 .popup.current .polaroid {
   box-shadow:
-    0 10px 28px rgba(0, 0, 0, 0.22),
-    0 0 0 3px rgba(255, 255, 255, 0.7),
-    0 0 26px 6px rgba(255, 255, 255, 0.9);
+    0 14px 34px rgba(60, 40, 30, .22),
+    0 0 0 3px rgba(255, 255, 255, .6),
+    0 0 30px 8px rgba(255, 243, 225, .9);
 }
 
 /* Thrown pop-ups settle back: smaller, calmer, slightly faded into the table */
 .popup.thrown {
-  --scale: 0.85;
-  opacity: 0.8;
+  --scale: .86;
+  opacity: .82;
   z-index: 1;
+  filter: saturate(.97);
 }
 
 /* Images are large, so they shrink a lot more once thrown onto the table */
-.popup.is-image.thrown {
-  --scale: 0.45;
-}
+.popup.is-image.thrown { --scale: .5; }
 
-/* gentle "breathing" glow on the live pop-up to draw the eye */
+/* gentle "breathing" on the held pop-up to draw the eye */
 @keyframes breathe {
-  0%, 100% {
-    transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(1.05);
-  }
-  50% {
-    transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(1.08);
-  }
+  0%, 100% { transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(1.04); }
+  50%      { transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(1.075); }
 }
 
-/* entrance pop for the freshly-shown (centered) pop-up */
-.popup.entering {
-  animation: pop-in 0.32s cubic-bezier(0.2, 1.2, 0.3, 1);
-}
+/* graceful spring pop on arrival */
+.popup.entering { animation: pop-in .42s var(--spring); }
 
 @keyframes pop-in {
-  from { transform: translate(-50%, -50%) rotate(0deg) scale(0.6); opacity: 0; }
-  to   { transform: translate(-50%, -50%) rotate(0deg) scale(1);   opacity: 1; }
+  from { transform: translate(-50%, -50%) rotate(0deg) scale(.62); opacity: 0; }
+  to   { transform: translate(-50%, -50%) rotate(0deg) scale(1.04); opacity: 1; }
 }
 
 /* ---- Message bubbles ---- */
@@ -113,70 +120,60 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  max-width: min(78vw, 420px);
 }
 
-.popup.is-msg .bubble.sent {
-  align-self: flex-end;
-}
-
-.popup.is-msg .bubble.recv {
-  align-self: flex-start;
-}
+.popup.is-msg .bubble.sent { align-self: flex-end; }
+.popup.is-msg .bubble.recv { align-self: flex-start; }
 
 .bubble {
   display: flex;
   flex-direction: column;
   max-width: 100%;
-  padding: 11px 15px;
-  border-radius: 20px;
-  font-size: 1rem;
+  padding: 11px 16px;
+  font-size: 1.02rem;
   line-height: 1.4;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+  border-radius: 22px;
+  box-shadow: var(--shadow-rest);
   word-wrap: break-word;
+  position: relative;
 }
 
 .bubble.sent {
   background: var(--sent-bg);
   color: var(--sent-fg);
-  border-bottom-right-radius: 6px;
+  border-bottom-right-radius: 7px;
 }
 
 .bubble.recv {
   background: var(--recv-bg);
   color: var(--recv-fg);
-  border-bottom-left-radius: 6px;
+  border-bottom-left-radius: 7px;
 }
 
 /* Small date/time tucked under the message text. Hidden by default and only
-   revealed while the bubble is the live (current) one, so thrown bubbles stay
+   revealed while the bubble is the held (current) one, so thrown bubbles stay
    uncluttered and show text only. */
 .bubble-meta {
   display: none;
-  margin-top: 3px;
-  font-size: 0.7rem;
+  margin-top: 4px;
+  font-size: .7rem;
   line-height: 1;
-  opacity: 0.6;
+  opacity: .55;
+  letter-spacing: .02em;
 }
 
-.popup.current .bubble-meta {
-  display: block;
-}
-
-.bubble.sent .bubble-meta {
-  align-self: flex-end;
-}
-
-.bubble.recv .bubble-meta {
-  align-self: flex-start;
-}
+.popup.current .bubble-meta { display: block; }
+.bubble.sent .bubble-meta { align-self: flex-end; color: rgba(255, 255, 255, .9); }
+.bubble.recv .bubble-meta { align-self: flex-start; color: var(--label-2); }
 
 /* ---- Image pop-ups: polaroid ---- */
 .polaroid {
-  background: #fffef9;
+  background: var(--polaroid);
   /* classic polaroid: thin top/sides, thick bottom for the caption */
   padding: 14px 14px 16px;
   border-radius: 3px;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-rest);
   /* frame hugs the photo so each keeps its own shape (no forced cropping) */
   width: max-content;
   max-width: min(72vw, 300px);
@@ -191,91 +188,105 @@ body {
   max-width: min(64vw, 272px);
   max-height: 52vh;
   object-fit: contain;
-  background: #e9e4dc;
+  background: #e9e4dc;       /* flat placeholder while a real photo loads */
 }
 
 .polaroid-caption {
-  padding: 12px 4px 4px;
+  padding: 12px 4px 2px;
   text-align: center;
-  /* handwritten feel for the captions */
-  font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+  font-family: var(--hand); /* handwritten feel for captions */
   color: #3a3530;
 }
 
-.polaroid-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  line-height: 1.2;
-}
+.polaroid-title { font-size: 1.5rem;  line-height: 1.1; }
+.polaroid-desc  { margin-top: 2px; font-size: 1.15rem; color: #5b544d; line-height: 1.1; }
+.polaroid-date  { margin-top: 6px; font-size: .95rem; font-family: var(--hand); color: var(--label-2); }
 
-.polaroid-desc {
-  margin-top: 4px;
-  font-size: 0.92rem;
-  line-height: 1.3;
-  color: #5b544d;
-}
-
-.polaroid-date {
-  margin-top: 6px;
-  font-size: 0.8rem;
-  color: #9a8f86;
-  letter-spacing: 0.04em;
-}
-
-/* ---- Opening splash: big day count, shown before the first tap ---- */
+/* ---- Opening splash: the fancy day-count cover ---- */
 .intro {
   position: fixed;
   inset: 0;
-  z-index: 50;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  z-index: 100;
+  display: grid;
+  place-items: center;
   text-align: center;
   padding: 24px;
   background: var(--bg);
   cursor: pointer;
-  transition: opacity 0.6s ease;
+  transition: opacity 1s ease, transform 1s var(--ease);
 }
 
 .intro.hidden {
   opacity: 0;
-  pointer-events: none;        /* taps fall through to the table once dismissed */
+  transform: scale(1.06);    /* elegant dissolve into the conversation */
+  pointer-events: none;
+}
+
+.intro-inner { position: relative; }
+
+.intro-eyebrow {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(.95rem, 4vw, 1.3rem);
+  color: var(--label);
+  letter-spacing: .04em;
+  opacity: 0;
+  animation: rise-in .9s var(--ease) .15s forwards;
 }
 
 .intro-count {
-  font-size: clamp(4.5rem, 26vw, 13rem);
+  font-family: var(--sans);
   font-weight: 800;
+  font-size: clamp(4.5rem, 26vw, 13rem);
   line-height: 1;
-  letter-spacing: -0.02em;
-  color: #c0506a;              /* warm rose */
+  color: var(--rose);
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;   /* no width jitter while counting up */
+  opacity: 0;
+  animation: rise-in 1s var(--ease) .3s forwards;
 }
 
 .intro-label {
-  margin-top: 0.5rem;
-  font-size: clamp(1rem, 5vw, 1.6rem);
-  letter-spacing: 0.06em;
-  color: #6b6259;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: clamp(1.1rem, 5.5vw, 1.9rem);
+  color: var(--label);
+  letter-spacing: .05em;
+  margin-top: .4rem;
+  opacity: 0;
+  animation: rise-in .9s var(--ease) .55s forwards;
 }
 
 .intro-since {
-  margin-top: 0.35rem;
-  font-size: 0.85rem;
-  letter-spacing: 0.05em;
-  color: #9a8f86;
+  font-size: .85rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--label-2);
+  margin-top: 1.1rem;
+  opacity: 0;
+  animation: rise-in .9s var(--ease) .8s forwards;
 }
 
 .intro-cta {
-  margin-top: 1.8rem;
-  font-size: 0.95rem;
-  letter-spacing: 0.1em;
+  margin-top: 2.4rem;
+  font-size: .92rem;
+  letter-spacing: .14em;
   text-transform: lowercase;
-  color: #9a8f86;
-  animation: pulse 1.8s ease-in-out infinite;
+  color: var(--label-2);
+  opacity: 0;
+  animation: rise-in .9s var(--ease) 1.1s forwards,
+             pulse 2.2s ease-in-out 1.6s infinite;
+}
+
+.intro-cta .dot { display: inline-block; margin: 0 2px; }
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.4; }
+  0%, 100% { opacity: .45; }
   50%      { opacity: 1; }
 }
 
@@ -283,25 +294,23 @@ body {
 .toss-hint {
   position: fixed;
   z-index: 20;
-  padding: 8px 14px;
+  padding: 8px 15px;
   border-radius: 999px;
-  background: rgba(40, 36, 32, 0.82);
+  background: rgba(40, 36, 32, .8);
   color: #fff;
-  font-size: 0.95rem;
+  font-size: .92rem;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.25s ease;
+  transition: opacity .3s ease;
 }
 
-.toss-hint.show {
-  opacity: 1;
-}
+.toss-hint.show { opacity: 1; }
 
-.toss-hint.up    { top: 16px;    left: 50%; transform: translateX(-50%); }
-.toss-hint.down  { bottom: 16px; left: 50%; transform: translateX(-50%); }
-.toss-hint.left  { left: 16px;   top: 50%;  transform: translateY(-50%); }
-.toss-hint.right { right: 16px;  top: 50%;  transform: translateY(-50%); }
+.toss-hint.up    { top: 18px;    left: 50%; transform: translateX(-50%); }
+.toss-hint.down  { bottom: 18px; left: 50%; transform: translateX(-50%); }
+.toss-hint.left  { left: 18px;   top: 50%;  transform: translateY(-50%); }
+.toss-hint.right { right: 18px;  top: 50%;  transform: translateY(-50%); }
 
 /* ---- Particle effect canvas (decoration; ignores clicks) ---- */
 .fx-canvas {
@@ -317,31 +326,29 @@ body {
   top: 14px;
   left: 14px;
   z-index: 45;
-  padding: 6px 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(4px);
-  color: #c0506a;
-  font-size: 0.95rem;
+  background: rgba(255, 255, 255, .72);
+  backdrop-filter: blur(7px);
+  color: var(--rose);
+  font-size: .95rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  letter-spacing: .02em;
+  box-shadow: 0 4px 14px rgba(60, 40, 30, .12), inset 0 0 0 1px rgba(255, 255, 255, .5);
   pointer-events: none;
   opacity: 0;                  /* hidden until the first memory is revealed */
-  transition: opacity 0.4s ease;
+  transition: opacity .5s ease;
 }
 
-.counter.show {
-  opacity: 1;
-}
-
-.counter.pop {
-  animation: counter-pop 0.3s ease;
-}
+.counter.show { opacity: 1; }
+.counter.pop { animation: counter-pop .34s var(--spring); }
 
 @keyframes counter-pop {
   0%   { transform: scale(1); }
-  40%  { transform: scale(1.22); }
+  40%  { transform: scale(1.24); }
   100% { transform: scale(1); }
 }
 
@@ -351,23 +358,24 @@ body {
   top: 14px;
   right: 14px;
   z-index: 45;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border: none;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-size: 1.1rem;
+  background: rgba(255, 255, 255, .72);
+  backdrop-filter: blur(7px);
+  box-shadow: 0 4px 14px rgba(60, 40, 30, .12), inset 0 0 0 1px rgba(255, 255, 255, .5);
+  font-size: 1.15rem;
   line-height: 1;
   cursor: pointer;
-  transition: transform 0.15s ease, opacity 0.2s ease;
+  transition: transform .15s var(--spring), opacity .2s ease;
 }
 
-.music-toggle:active {
-  transform: scale(0.9);
-}
+.music-toggle:hover  { transform: scale(1.06); }
+.music-toggle:active { transform: scale(.9); }
+.music-toggle.muted  { opacity: .6; }
 
-.music-toggle.muted {
-  opacity: 0.65;
+@media (max-width: 560px) {
+  .bubble { font-size: .98rem; }
+  .popup.is-msg { max-width: 82vw; }
 }
