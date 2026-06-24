@@ -107,7 +107,26 @@ body {
 }
 
 /* ---- Message bubbles ---- */
+/* A message pop-up stacks one or more bubbles; each aligns to its sender's
+   side (sent right, received left), just like a chat. */
+.popup.is-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.popup.is-msg .bubble.sent {
+  align-self: flex-end;
+}
+
+.popup.is-msg .bubble.recv {
+  align-self: flex-start;
+}
+
 .bubble {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
   padding: 11px 15px;
   border-radius: 20px;
   font-size: 1rem;
@@ -126,6 +145,29 @@ body {
   background: var(--recv-bg);
   color: var(--recv-fg);
   border-bottom-left-radius: 6px;
+}
+
+/* Small date/time tucked under the message text. Hidden by default and only
+   revealed while the bubble is the live (current) one, so thrown bubbles stay
+   uncluttered and show text only. */
+.bubble-meta {
+  display: none;
+  margin-top: 3px;
+  font-size: 0.7rem;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.popup.current .bubble-meta {
+  display: block;
+}
+
+.bubble.sent .bubble-meta {
+  align-self: flex-end;
+}
+
+.bubble.recv .bubble-meta {
+  align-self: flex-start;
 }
 
 /* ---- Image pop-ups: polaroid ---- */

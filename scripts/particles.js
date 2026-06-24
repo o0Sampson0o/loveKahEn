@@ -12,6 +12,11 @@
 
   const EMOJIS = ["❤️", "💕", "💖", "✨", "🌸", "💛", "🌟"];
 
+  // Hard ceiling on live particles. Each one is an emoji fillText per frame —
+  // the costliest part of the draw — so spam-clicking bursts must stay bounded
+  // or the frame loop tanks. Ambient is throttled separately (<80).
+  const MAX_PARTICLES = 100;
+
   const canvas = document.createElement("canvas");
   canvas.className = "fx-canvas";
   const ctx = canvas.getContext("2d");
@@ -19,6 +24,31 @@
   let W = 0;
   let H = 0;
   const particles = [];
+
+  // Each emoji is pre-rendered once to its own little offscreen canvas, then
+  // stamped with drawImage every frame. fillText (glyph shaping + rasterising)
+  // per particle per frame is the real cost; drawImage of a cached bitmap is
+  // cheap, so the frame loop scales to far more particles.
+  const SPRITE_FONT = 64; // glyph render size inside the sprite
+  const SPRITE_BOX = 80; // sprite canvas size: padding so glyphs never clip
+  let sprites = {};
+
+  function buildSprites() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    sprites = {};
+    for (const ch of EMOJIS) {
+      const c = document.createElement("canvas");
+      c.width = SPRITE_BOX * dpr;
+      c.height = SPRITE_BOX * dpr;
+      const cx = c.getContext("2d");
+      cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cx.textAlign = "center";
+      cx.textBaseline = "middle";
+      cx.font = SPRITE_FONT + "px serif";
+      cx.fillText(ch, SPRITE_BOX / 2, SPRITE_BOX / 2);
+      sprites[ch] = c;
+    }
+  }
 
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -29,6 +59,8 @@
     canvas.style.width = W + "px";
     canvas.style.height = H + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // dpr may change (e.g. moving window between screens) — rebuild crisp.
+    buildSprites();
   }
 
   function pick() {
@@ -56,9 +88,27 @@
     });
   }
 
+  // Drop up to n oldest burst particles (they sit earliest in push order),
+  // leaving the ambient stream untouched, to free room for a fresh burst.
+  function evictOldestBursts(n) {
+    let removed = 0;
+    for (let i = 0; i < particles.length && removed < n; ) {
+      if (!particles[i].ambient) {
+        particles.splice(i, 1);
+        removed++;
+      } else {
+        i++;
+      }
+    }
+  }
+
   // A celebratory spray outward from a point, with a little gravity.
   function burst(x, y, count) {
     count = count || 18;
+    // Spam-clicking would otherwise pile up unbounded bursts; keep the newest
+    // hearts by recycling the oldest ones when we're near the ceiling.
+    const headroom = MAX_PARTICLES - particles.length;
+    if (headroom < count) evictOldestBursts(count - headroom);
     for (let i = 0; i < count; i++) {
       const a = Math.random() * Math.PI * 2;
       const sp = 1.5 + Math.random() * 4.5;
@@ -95,8 +145,6 @@
     }
 
     ctx.clearRect(0, 0, W, H);
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
 
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
@@ -124,12 +172,14 @@
         alpha = Math.max(0, 1 - p.life / p.max);
       }
 
+      // Scale the cached sprite so the glyph appears at p.size: the box is
+      // drawn proportionally larger than the glyph it contains.
+      const draw = (p.size / SPRITE_FONT) * SPRITE_BOX;
       ctx.globalAlpha = alpha;
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(p.rot);
-      ctx.font = p.size + "px serif";
-      ctx.fillText(p.char, 0, 0);
+      ctx.drawImage(sprites[p.char], -draw / 2, -draw / 2, draw, draw);
       ctx.restore();
     }
 

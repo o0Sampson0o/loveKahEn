@@ -12,15 +12,30 @@
 
 // --- Placeholder content -----------------------------------------------------
 
-// Each message: { text, from: "me" | "her" }  -> styled as sent / received.
+// A MESSAGES entry is either:
+//   - a single line:  { text, from: "me" | "her", date?, time? }
+//   - a group: an array of lines [ { text, from }, ... ] shown together as one
+//     self-contained snippet. Only the first line carries date/time.
+// `date` / `time` are optional (e.g. "24/06/2026", "11:47 PM"); when present
+// they show under the text while the bubble is live, and hide once thrown.
 const MESSAGES = [
+  // Example group: a little exchange shown together, timestamped once.
+  [
+    { text: "你今天有想我吗", from: "her", date: "24/06/2026", time: "11:47 PM" },
+    { text: "每分每秒都在想", from: "me" },
+    { text: "傻猪😚", from: "her" },
+  ],
   {
     text: "晚安",
     from: "her",
+    date: "24/06/2026",
+    time: "11:47 PM",
   },
   {
     text: "晚安",
     from: "me",
+    date: "24/06/2026",
+    time: "11:49 PM",
   },
   {
     text: "笨笨蛋😡",
@@ -459,8 +474,9 @@ let surfaceW = 0; // size of the scrollable canvas (set in init)
 let surfaceH = 0;
 let memories = 0; // how many pop-ups have been revealed so far
 
-const DENSITY = 5; // max pop-ups per screen-sized area before it's "crowded"
+const DENSITY = 5; // max weight per screen-sized area before it's "crowded"
 const MARGIN = 90; // keep thrown items this far from an area's edges (px)
+const DEFAULT_RADIUS = 60; // fallback footprint radius if an item isn't measured
 
 function rand(min, max) {
   return Math.random() * (max - min) + min;
@@ -490,20 +506,31 @@ function createBag(items) {
   };
 }
 
-// Split messages by sender so we can balance how often each side appears.
-// She wrote fewer messages, so plain shuffling would show hers less often.
-const HER_MESSAGES = MESSAGES.filter((m) => m.from === "her");
-const ME_MESSAGES = MESSAGES.filter((m) => m.from === "me");
+// A MESSAGES entry is either a single line (object) or a group: an array of
+// lines shown together as one self-contained snippet. Split them so single
+// lines can still be sender-balanced; groups get their own rotation.
+const GROUPS = MESSAGES.filter(Array.isArray);
+const SINGLES = MESSAGES.filter((m) => !Array.isArray(m));
 
-// Chance that a shown message is hers. 0.5 = both sides equally often;
+// Split single lines by sender so we can balance how often each side appears.
+// She wrote fewer messages, so plain shuffling would show hers less often.
+const HER_MESSAGES = SINGLES.filter((m) => m.from === "her");
+const ME_MESSAGES = SINGLES.filter((m) => m.from === "me");
+
+// Chance that a shown single line is hers. 0.5 = both sides equally often;
 // 0.55 makes hers appear a bit more than yours. Tune to taste.
 const HER_SHARE = 0.55;
 
+// Chance a shown message pop-up is a grouped snippet rather than a single line.
+const GROUP_SHARE = 0.25;
+
 const nextHerMessage = createBag(HER_MESSAGES);
 const nextMeMessage = createBag(ME_MESSAGES);
+const nextGroup = GROUPS.length ? createBag(GROUPS) : null;
 const nextImage = createBag(IMAGES);
 
 function nextMessage() {
+  if (nextGroup && Math.random() < GROUP_SHARE) return nextGroup();
   const useHer =
     HER_MESSAGES.length && (!ME_MESSAGES.length || Math.random() < HER_SHARE);
   return useHer ? nextHerMessage() : nextMeMessage();
@@ -512,13 +539,41 @@ function nextMessage() {
 // --- Building pop-ups --------------------------------------------------------
 
 function buildMessage() {
-  const msg = nextMessage();
+  const unit = nextMessage();
+  // A unit is either one line or a group of lines; render them as a stack of
+  // bubbles in a single self-contained pop-up.
+  const lines = Array.isArray(unit) ? unit : [unit];
+
   const el = document.createElement("div");
-  el.className = "popup";
-  const bubble = document.createElement("div");
-  bubble.className = "bubble " + (msg.from === "me" ? "sent" : "recv");
-  bubble.textContent = msg.text;
-  el.appendChild(bubble);
+  el.className = "popup is-msg";
+  // A group occupies far more space than a single line, so it counts for more
+  // when judging how crowded an area is (see DENSITY / loadInRect).
+  el.dataset.weight = Array.isArray(unit) ? "3" : "1";
+
+  lines.forEach((msg, i) => {
+    const bubble = document.createElement("div");
+    bubble.className = "bubble " + (msg.from === "me" ? "sent" : "recv");
+
+    const body = document.createElement("span");
+    body.className = "bubble-text";
+    body.textContent = msg.text;
+    bubble.appendChild(body);
+
+    // Date/time live on the first line only (a group is timestamped once). They
+    // form a small meta line that shows while live and hides once thrown.
+    if (i === 0) {
+      const meta = [msg.date, msg.time].filter(Boolean).join(" · ");
+      if (meta) {
+        const metaEl = document.createElement("span");
+        metaEl.className = "bubble-meta";
+        metaEl.textContent = meta;
+        bubble.appendChild(metaEl);
+      }
+    }
+
+    el.appendChild(bubble);
+  });
+
   return el;
 }
 
@@ -527,6 +582,7 @@ function buildImage() {
 
   const el = document.createElement("div");
   el.className = "popup is-image";
+  el.dataset.weight = "1";
 
   const polaroid = document.createElement("figure");
   polaroid.className = "polaroid";
@@ -597,45 +653,66 @@ function centerOf(el) {
   return { x: parseFloat(el.style.left), y: parseFloat(el.style.top) };
 }
 
-function countInRect(items, x0, y0, w, h) {
-  return items.filter((el) => {
-    const c = centerOf(el);
-    return c.x >= x0 && c.x <= x0 + w && c.y >= y0 && c.y <= y0 + h;
-  }).length;
+function weightOf(el) {
+  return parseFloat(el.dataset.weight) || 1;
 }
 
-// Pick a point inside a rectangle, biased towards open space (away from items).
-function spotInRect(items, x0, y0, w, h) {
+function radiusOf(el) {
+  return parseFloat(el.dataset.radius) || DEFAULT_RADIUS;
+}
+
+// Total weight (not raw count) of items whose centre falls in the rect. A group
+// weighs more than a single line, so a few groups crowd an area like many lines.
+function loadInRect(items, x0, y0, w, h) {
+  let load = 0;
+  for (const el of items) {
+    const c = centerOf(el);
+    if (c.x >= x0 && c.x <= x0 + w && c.y >= y0 && c.y <= y0 + h) {
+      load += weightOf(el);
+    }
+  }
+  return load;
+}
+
+// Pick a point inside a rectangle, biased towards open space. "Open" accounts
+// for footprints: the surface gap is centre-distance minus both radii, so a
+// landing spot is judged by how much clear space is actually left around the
+// incoming item — preventing a big group from overlapping its neighbours.
+function spotInRect(items, x0, y0, w, h, incomingRadius) {
+  const r = incomingRadius || DEFAULT_RADIUS;
   let best = null;
-  let bestDist = -1;
+  let bestGap = -Infinity;
   for (let i = 0; i < 16; i++) {
     const x = rand(x0 + MARGIN, x0 + w - MARGIN);
     const y = rand(y0 + MARGIN, y0 + h - MARGIN);
-    let nearest = Infinity;
+    let gap = Infinity; // smallest clear surface gap to any neighbour
     for (const el of items) {
       const c = centerOf(el);
-      nearest = Math.min(nearest, Math.hypot(c.x - x, c.y - y));
+      const surfaceGap = Math.hypot(c.x - x, c.y - y) - radiusOf(el) - r;
+      gap = Math.min(gap, surfaceGap);
     }
-    if (nearest > bestDist) {
-      bestDist = nearest;
+    if (gap > bestGap) {
+      bestGap = gap;
       best = { x, y };
     }
-    if (nearest > 150) break; // comfortably empty — good enough
+    if (gap > 40) break; // comfortable clearance around the item — good enough
   }
   return best;
 }
 
-// Decide where a thrown pop-up should land. If the current screen-area already
-// holds DENSITY items, look to a neighbouring area and report the direction.
-function chooseSpot() {
+// Decide where a thrown pop-up should land. If the current screen-area is
+// already at DENSITY (by weight), look to a neighbouring area and report the
+// direction. `incomingRadius` is the footprint of the item being thrown, so a
+// large group is given enough clearance not to overlap what's already there.
+function chooseSpot(incomingRadius) {
   const x0 = table.scrollLeft;
   const y0 = table.scrollTop;
   const w = table.clientWidth;
   const h = table.clientHeight;
   const items = thrownItems();
 
-  if (countInRect(items, x0, y0, w, h) < DENSITY) {
-    return { ...spotInRect(items, x0, y0, w, h), direction: null };
+  if (loadInRect(items, x0, y0, w, h) < DENSITY) {
+    return { ...spotInRect(items, x0, y0, w, h, incomingRadius), direction: null };
   }
 
   // Crowded here — try neighbouring areas (random order so it varies).
@@ -649,13 +726,16 @@ function chooseSpot() {
     const nx = x0 + n.dx * w;
     const ny = y0 + n.dy * h;
     if (nx < 0 || ny < 0 || nx + w > surfaceW || ny + h > surfaceH) continue;
-    if (countInRect(items, nx, ny, w, h) < DENSITY) {
-      return { ...spotInRect(items, nx, ny, w, h), direction: n.direction };
+    if (loadInRect(items, nx, ny, w, h) < DENSITY) {
+      return {
+        ...spotInRect(items, nx, ny, w, h, incomingRadius),
+        direction: n.direction,
+      };
     }
   }
 
   // Everything nearby is full — just drop it somewhere in view.
-  return { ...spotInRect(items, x0, y0, w, h), direction: null };
+  return { ...spotInRect(items, x0, y0, w, h, incomingRadius), direction: null };
 }
 
 function shuffle(arr) {
@@ -694,7 +774,15 @@ function throwCurrent() {
   el.style.top = fromY + "px";
   void el.offsetWidth; // commit that starting point so the move animates
 
-  const dest = chooseSpot();
+  // Footprint once it settles on the table. offsetWidth/Height are the layout
+  // size (transform-independent); the thrown scale shrinks it (images most).
+  const scale = el.classList.contains("is-image") ? 0.45 : 0.85;
+  const fw = el.offsetWidth * scale;
+  const fh = el.offsetHeight * scale;
+  const radius = 0.5 * Math.hypot(fw, fh);
+  el.dataset.radius = String(radius);
+
+  const dest = chooseSpot(radius);
   el.classList.add("thrown");
   el.style.setProperty("--tilt", rand(-14, 14) + "deg");
   el.style.left = dest.x + "px";
