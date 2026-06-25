@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- warm cream tile so it reads on both light and dark browser tabs -->
+  <rect width="64" height="64" rx="14" fill="#efe7df"/>
+  <!-- rose heart, matching the page accent -->
+  <path d="M32 50
+           C 20 40, 10 32, 10 24
+           C 10 17, 16 13, 22 13
+           C 27 13, 30 16, 32 19
+           C 34 16, 37 13, 42 13
+           C 48 13, 54 17, 54 24
+           C 54 32, 44 40, 32 50 Z"
+        fill="#c0506a"/>
+</svg>
