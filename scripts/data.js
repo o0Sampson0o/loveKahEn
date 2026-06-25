@@ -17,23 +17,13 @@ const START_DATE = new Date(2025, 11, 6); // 6 Dec 2025
 // `date` / `time` are optional (e.g. "24/06/2026", "11:47 PM"); when present
 // they show under the text while the bubble is live, and hide once thrown.
 const MESSAGES = [
-  // Example group: a little exchange shown together, timestamped once.
-  [
-    { text: "你今天有想我吗", from: "her", date: "24/06/2026", time: "11:47 PM" },
-    { text: "每分每秒都在想", from: "me" },
-    { text: "傻猪😚", from: "her" },
-  ],
   {
     text: "晚安",
     from: "her",
-    date: "24/06/2026",
-    time: "11:47 PM",
   },
   {
     text: "晚安",
     from: "me",
-    date: "24/06/2026",
-    time: "11:49 PM",
   },
   {
     text: "笨笨蛋😡",
